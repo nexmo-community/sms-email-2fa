@@ -11,7 +11,7 @@ Open Visual Studio and create a new ASP .NET MVC application. For this demo, we'
 Add the Nexmo Client to your application via the NuGet Package Console. 
 
 ```
-PM> Install-Package Nexmo.Csharp.Client
+PM> Install-Package Nexmo.Csharp.Client -Version 6.3.3
 ```
 
 ### [![alt text](https://cloud.githubusercontent.com/assets/328367/17298941/0cd29600-5804-11e6-950c-4542416776bf.png)](https://github.com/nexmo-community/nexmo-verify-2fa-dotnet-example/commit/ee500bbadfd803b9d82986a492db367f5b262ced) Install the SendGrid client via NuGet Package Manager 
@@ -21,7 +21,7 @@ When doing this be sure to use the 6.3.3 version rather than the current 7.0.2 a
 **TODO: Can you install a specific version from the command line?**
 
 ```
-PM> Install-Package SendGrid via NuGet Package Manager
+PM> Install-Package SendGrid via NuGet Package Manager 
 ```
 
 ### [![alt text](https://cloud.githubusercontent.com/assets/328367/17298941/0cd29600-5804-11e6-950c-4542416776bf.png)](https://github.com/nexmo-community/nexmo-verify-2fa-dotnet-example/commit/ee500bbadfd803b9d82986a492db367f5b262ced) Add Nexmo and SendGrid credentials
@@ -251,3 +251,4 @@ With that...**TODO: Complete**
 **TODO: Image to prove it's working.**
 
 2FA adds a layer of security to correctly identify users and further protect sensitive user information. Using Nexmo's C# Client Library and SendGrid's C# Client, you can add both email and phone verification for your 2FA solution with ease. Feel free to send me any thoughts/questions on Twitter @sidsharma_27 or email me at sidharth.sharma@nexmo.com!
+
