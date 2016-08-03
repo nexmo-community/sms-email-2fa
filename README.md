@@ -1,4 +1,4 @@
-# Add SMS and Email 2FA to your ASP .NET Identity App using Nexmo and SendGrid
+﻿# Add SMS and Email 2FA to your ASP .NET Identity App using Nexmo and SendGrid
 
 2FA is a must nowadays to increase the security within your application. It is seen in all kinds of apps: from the signup process to user action verification. The most common types of 2FA are email verification and phone verification. In this tutorial we'll show how to set up 2FA in your .NET application using ASP .NET Identity, the [SendGrid C# Client](#) for email auth and the [Nexmo C# Client Library](https://github.com/nexmo/nexmo-dotnet) for SMS and Call-based auth.
 
@@ -18,10 +18,8 @@ PM> Install-Package Nexmo.Csharp.Client
 
 When doing this be sure to use the 6.3.3 version rather than the current 7.0.2 as there has been some difficulty with the namespaces for .NET 4.5.2
 
-**TODO: Can you install a specific version from the command line?**
-
 ```
-PM> Install-Package SendGrid via NuGet Package Manager
+PM> Install-Package SendGrid via NuGet Package Manager ​-Version 6.3.3
 ```
 
 ### [![alt text](https://cloud.githubusercontent.com/assets/328367/17298941/0cd29600-5804-11e6-950c-4542416776bf.png)](https://github.com/nexmo-community/nexmo-verify-2fa-dotnet-example/commit/ee500bbadfd803b9d82986a492db367f5b262ced) Add Nexmo and SendGrid credentials
