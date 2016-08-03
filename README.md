@@ -11,7 +11,7 @@ Open Visual Studio and create a new ASP .NET MVC application. For this demo, we'
 Add the Nexmo Client to your application via the NuGet Package Console. 
 
 ```
-PM> Install-Package Nexmo.Csharp.Client
+PM> Install-Package Nexmo.Csharp.Client 
 ```
 
 ### [![alt text](https://cloud.githubusercontent.com/assets/328367/17298941/0cd29600-5804-11e6-950c-4542416776bf.png)](https://github.com/nexmo-community/nexmo-verify-2fa-dotnet-example/commit/ee500bbadfd803b9d82986a492db367f5b262ced) Install the SendGrid client via NuGet Package Manager 
@@ -231,7 +231,7 @@ if (user != null)
 
 ### [![alt text](https://cloud.githubusercontent.com/assets/328367/17298941/0cd29600-5804-11e6-950c-4542416776bf.png)](https://github.com/nexmo-community/nexmo-verify-2fa-dotnet-example/commit/00dc4aa91f7ec73ee52db1f6ef23c136d83de6ae) Add Info View
 
-Inside the Account folder of the Views folder, create a new View named **TODO: named what?*** that the user is redirected to if their email has not been confirmed. The view should contain the following code:
+Inside the Account folder of the Views folder, create a new View named 'Info' that the user will be redirected to if their email has not been confirmed. The view should contain the following code:
 
 ```xml
 <h2>@ViewBag.Title.</h2>
