@@ -43,61 +43,57 @@ For the purpose of the demo we'll put the Nexmo and SendGrid credentials in the 
 Inside the `IdentityConfig.cs` file, add the SendGrid configuration in the `SMSService` method. Then, plug in the Nexmo Client inside the `SMSService` method of the `IdentityConfig.cs` file. Add the using directives for the Nexmo and SendGrid namespaces.
 
 ```cs
-using Nexmo.Api;
-using SendGrid;
-using System.Net;
-using System.Diagnostics;
-using System.Configuration;
+public class EmailService : IIdentityMessageService
+{
+    public async Task SendAsync(IdentityMessage message)
+    {
+        // Plug in your email service here to send an email.
+        await configSendGridasync(message);
+    }
+    private async Task configSendGridasync(IdentityMessage message)
+    {
+        var myMessage = new SendGridMessage();
+        myMessage.AddTo(message.Destination);
+        myMessage.From = new System.Net.Mail.MailAddress(
+                        "demo@nexmo.com", "Nexmo2FADemo");
+        myMessage.Subject = message.Subject;
+        myMessage.Text = message.Body;
+        myMessage.Html = message.Body;
+        var credentials = new NetworkCredential(
+            ConfigurationManager.AppSettings["mailAccount"],
+            ConfigurationManager.AppSettings["mailPassword"]
+            );
+
+        // Create a Web transport for sending email.
+        var transportWeb = new Web(credentials);
+
+        // Send the email.
+        if (transportWeb != null)
+        {
+            await transportWeb.DeliverAsync(myMessage);
+        }
+        else
+        {
+            Trace.TraceError("Failed to create Web transport.");
+            await Task.FromResult(0);
+        }
+    }
+}
 
 public class SmsService : IIdentityMessageService
 {
-	 public Task SendAsync(IdentityMessage message)
-	 {
-			 var sms = SMS.Send(new SMS.SMSRequest
-			 {
-					 from = ConfigurationManager.AppSettings["SMSAccountFrom"],
-					 to = message.Destination,
-					 text = message.Body
-			 });
-			 return Task.FromResult(0);
-	 }
+    public Task SendAsync(IdentityMessage message)
+    {
+        var sms = SMS.Send(new SMS.SMSRequest
+        {
+            from = ConfigurationManager.AppSettings["SMSAccountFrom"],
+            to = message.Destination,
+            text = message.Body
+        });
+        return Task.FromResult(0);
+    }
 }
-public class EmailService : IIdentityMessageService
-{
-	 public async Task SendAsync(IdentityMessage message)
-	 { 
-				// Plug in your email service here to send an email.
-				await configSendGridasync(message);
-	 }
-	 private async Task configSendGridasync(IdentityMessage message)
-	 {
-			 var myMessage = new SendGridMessage();
-			 myMessage.AddTo(message.Destination);
-			 myMessage.From = new System.Net.Mail.MailAddress(
-											 "demo@nexmo.com", "Nexmo2FADemo");
-			 myMessage.Subject = message.Subject;
-			 myMessage.Text = message.Body;
-			 myMessage.Html = message.Body;
-			 var credentials = new NetworkCredential(
-									ConfigurationManager.AppSettings["mailAccount"],
-									ConfigurationManager.AppSettings["mailPassword"]
-									);
 
-			 // Create a Web transport for sending email.
-			 var transportWeb = new Web(credentials);
-
-			 // Send the email.
-			 if (transportWeb != null)
-			 {
-					 await transportWeb.DeliverAsync(myMessage);
-			 }
-			 else
-			 {
-					 Trace.TraceError("Failed to create Web transport.");
-					 await Task.FromResult(0);
-			 }
-	 }
-} 
 ```
 
 ### [![alt text](https://cloud.githubusercontent.com/assets/328367/17298941/0cd29600-5804-11e6-950c-4542416776bf.png)](https://github.com/nexmo-community/nexmo-verify-2fa-dotnet-example/commit/c380379c50b3b7c107c07bde48e09913695c2324) Add 'SendEmailConfirmationTokenAsync()' method to 'AccountController'
@@ -107,12 +103,10 @@ Add the following method to your `AccountController` which will be called on use
 ```cs
 private async Task<string> SendEmailConfirmationTokenAsync(string userID, string subject)
 {
-	 string code = await UserManager.GenerateEmailConfirmationTokenAsync(userID);
-	 var callbackUrl = Url.Action("ConfirmEmail", "Account",
-				 new { userId = userID, code = code }, protocol: Request.Url.Scheme);
-	 await UserManager.SendEmailAsync(userID, subject,
-				 "Please confirm your account by clicking <a href=\"" + callbackUrl + "\">here</a>");
-	 return callbackUrl;
+    string code = await UserManager.GenerateEmailConfirmationTokenAsync(userID);
+    var callbackUrl = Url.Action("ConfirmEmail", "Account",  new { userId = userID, code = code }, protocol: Request.Url.Scheme);
+    await UserManager.SendEmailAsync(userID, subject, "Please confirm your account by clicking <a href=\"" + callbackUrl + "\">here</a>");
+    return callbackUrl;
 }
 ```
 
@@ -127,22 +121,15 @@ Inside the `Register` method of the `AccountController`, add a couple properties
 public async Task<ActionResult> Register(RegisterViewModel model)
 {
     if (ModelState.IsValid)
-	  {
-		    var user = new ApplicationUser
-			  {
-				    UserName = model.Email,
-					  Email = model.Email,
-					  TwoFactorEnabled = true,
-					  PhoneNumberConfirmed = false
-			  };
-
-			  var result = await UserManager.CreateAsync(user, model.Password);
-			  if (result.Succeeded)
-			  {
-				    Session["UserID"] = user.Id;
-					  return RedirectToAction("AddPhoneNumber", "Manage");
-			  }
-			  AddErrors(result);
+    {
+        var user = new ApplicationUser { UserName = model.Email, Email = model.Email, TwoFactorEnabled = true, PhoneNumberConfirmed = false};
+        var result = await UserManager.CreateAsync(user, model.Password);
+        if (result.Succeeded)
+        {
+            Session["UserID"] = user.Id;
+            return RedirectToAction("AddPhoneNumber", "Manage");
+        }
+        AddErrors(result);
     }
     // If we got this far, something failed, redisplay form
     return View(model);
@@ -159,31 +146,31 @@ Add the `[AllowAnonymous]` attribute to both the GET & POST `AddPhoneNumber` act
 [ValidateAntiForgeryToken]
 public async Task<ActionResult> AddPhoneNumber(AddPhoneNumberViewModel model)
 {
-	 if (!ModelState.IsValid)
-	 {
-			return View(model);
-	 }
-	 var db = new ApplicationDbContext();
-	 if (db.Users.FirstOrDefault(u => u.PhoneNumber == model.Number) == null)
-	 {
-			 // Generate the token and send it
-			 var code = await UserManager.GenerateChangePhoneNumberTokenAsync((string)Session["UserID"], model.Number);
-			 if (UserManager.SmsService != null)
-			 {
-					 var message = new IdentityMessage
-					 {
-							 Destination = model.Number,
-							 Body = "Your security code is: " + code
-					 };
-					 await UserManager.SmsService.SendAsync(message);
-			 }
-			 return RedirectToAction("VerifyPhoneNumber", new { PhoneNumber = model.Number });
-	 }
-	 else
-	 {
-			 ModelState.AddModelError("", "The provided phone number is associated with another account.");
-			 return View();
-	 }
+    if (!ModelState.IsValid)
+    {
+        return View(model);
+    }
+    var db = new ApplicationDbContext();
+    if (db.Users.FirstOrDefault(u => u.PhoneNumber == model.Number) == null)
+    {
+        // Generate the token and send it
+        var code = await UserManager.GenerateChangePhoneNumberTokenAsync((string)Session["UserID"], model.Number);
+        if (UserManager.SmsService != null)
+        {
+            var message = new IdentityMessage
+            {
+                Destination = model.Number,
+                Body = "Your security code is: " + code
+            };
+            await UserManager.SmsService.SendAsync(message);
+        }
+        return RedirectToAction("VerifyPhoneNumber", new { PhoneNumber = model.Number });
+    }
+    else
+    {
+        ModelState.AddModelError("", "The provided phone number is associated with another account.");
+        return View();
+    }
 }
 ```
 
@@ -193,7 +180,7 @@ Add the `[AllowAnonymous]` attribute to the action method and delete everything 
 
 ```cs
 [AllowAnonymous]
-public Task<ActionResult> VerifyPhoneNumber(string phoneNumber)
+public async Task<ActionResult> VerifyPhoneNumber(string phoneNumber)
 {
     return phoneNumber == null ? View("Error") : View(new VerifyPhoneNumberViewModel { PhoneNumber = phoneNumber });
 }
@@ -207,23 +194,23 @@ Replace `User.Identity.GetUserId()` with `Session["UserID"]` in the method as sh
 [ValidateAntiForgeryToken]
 public async Task<ActionResult> VerifyPhoneNumber(VerifyPhoneNumberViewModel model)
 {
-		if (!ModelState.IsValid)
-		{
-				return View(model);
-		}
-		var result = await UserManager.ChangePhoneNumberAsync((string)Session["UserID"], model.PhoneNumber, model.Code);
-		if (result.Succeeded)
-		{
-				var user = await UserManager.FindByIdAsync((string)Session["UserID"]);
-				if (user != null)
-				{
-						await SignInManager.SignInAsync(user, isPersistent: false, rememberBrowser: false);
-				}
-				return RedirectToAction("Index", new { Message = ManageMessageId.AddPhoneSuccess });
-		}
-		// If we got this far, something failed, redisplay form
-		ModelState.AddModelError("", "Failed to verify phone");
-		return View(model);
+    if (!ModelState.IsValid)
+    {
+        return View(model);
+    }
+    var result = await UserManager.ChangePhoneNumberAsync((string)Session["UserID"], model.PhoneNumber, model.Code);
+    if (result.Succeeded)
+    {
+        var user = await UserManager.FindByIdAsync((string)Session["UserID"]);
+        if (user != null)
+        {
+            await SignInManager.SignInAsync(user, isPersistent: false, rememberBrowser: false);
+        }
+        return RedirectToAction("Index", new { Message = ManageMessageId.AddPhoneSuccess });
+    }
+    // If we got this far, something failed, redisplay form
+    ModelState.AddModelError("", "Failed to verify phone");
+    return View(model);
 }
 ```
 ### [![alt text](https://cloud.githubusercontent.com/assets/328367/17298941/0cd29600-5804-11e6-950c-4542416776bf.png)](https://github.com/nexmo-community/nexmo-verify-2fa-dotnet-example/commit/078b28917fbfc9b48f09b01fbd20bd747270efc4) Check if the user has a confirmed email on Login
@@ -234,13 +221,13 @@ In the `Login()` action method, check to see if the user has confirmed their ema
 var user = await UserManager.FindByNameAsync(model.Email);
 if (user != null)
 {
-	 if (!await UserManager.IsEmailConfirmedAsync(user.Id))
-	 {
-			string callbackUrl = await SendEmailConfirmationTokenAsync(user.Id, "Confirm your account");
-			ViewBag.title = "Check Email";
-			ViewBag.message = "You must have a confirmed email to login.";
-			return View("Info");
-	 }
+    if (!await UserManager.IsEmailConfirmedAsync(user.Id))
+    {
+        string callbackUrl = await SendEmailConfirmationTokenAsync(user.Id, "Confirm your account");
+        ViewBag.title = "Check Email";
+        ViewBag.message = "You must have a confirmed email to login.";
+        return View("Info");
+    }
 }
 ```
 
@@ -257,11 +244,6 @@ Inside the Account folder of the Views folder, create a new View named **TODO: n
 
 Inside the Account folder of the Views folder, edit the Login and VerifyCode views. In both files, delete the <div> containing the 'Remember Me' checkbox. This will restrict the user from bypassing 2FA verification.  Also, delete the corresponding variable in each of the view models ('SendCodeViewModel' and 'VerifyCodeViewModel').
 
-```xml
-<h2>@ViewBag.Title.</h2>
-<h3>@ViewBag.Message</h3>
-```
-
 ### Conclusion
 
 With that...**TODO: Complete**
@@ -269,4 +251,3 @@ With that...**TODO: Complete**
 **TODO: Image to prove it's working.**
 
 2FA adds a layer of security to correctly identify users and further protect sensitive user information. Using Nexmo's C# Client Library and SendGrid's C# Client, you can add both email and phone verification for your 2FA solution with ease. Feel free to send me any thoughts/questions on Twitter @sidsharma_27 or email me at sidharth.sharma@nexmo.com!
-
