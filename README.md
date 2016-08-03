@@ -11,12 +11,14 @@ Open Visual Studio and create a new ASP .NET MVC application. For this demo, we'
 Add the Nexmo Client to your application via the NuGet Package Console. 
 
 ```
-PM> Install-Package Nexmo.Csharp.Client ​-Version 6.3.3
+PM> Install-Package Nexmo.Csharp.Client ​*-Version 6.3.3*
 ```
 
 ### [![alt text](https://cloud.githubusercontent.com/assets/328367/17298941/0cd29600-5804-11e6-950c-4542416776bf.png)](https://github.com/nexmo-community/nexmo-verify-2fa-dotnet-example/commit/ee500bbadfd803b9d82986a492db367f5b262ced) Install the SendGrid client via NuGet Package Manager 
 
 When doing this be sure to use the 6.3.3 version rather than the current 7.0.2 as there has been some difficulty with the namespaces for .NET 4.5.2
+
+**TODO: Can you install a specific version from the command line?**
 
 ```
 PM> Install-Package SendGrid via NuGet Package Manager 
@@ -239,14 +241,12 @@ Inside the Account folder of the Views folder, create a new View named 'Info' th
 ```
 
 ### [![alt text](https://cloud.githubusercontent.com/assets/328367/17298941/0cd29600-5804-11e6-950c-4542416776bf.png)](https://github.com/nexmo-community/nexmo-verify-2fa-dotnet-example/commit/8501c9884faa97139dc4b30f2f41b4c448cd2641) Update Login View
-
 Inside the Account folder of the Views folder, edit the Login and VerifyCode views. In both files, delete the <div> containing the 'Remember Me' checkbox. This will restrict the user from bypassing 2FA verification.  Also, delete the corresponding variable in each of the view models ('SendCodeViewModel' and 'VerifyCodeViewModel').
 
 ### Conclusion
 
-With that...**TODO: Complete**
+With that, you have a web app using ASP .NET Identity that is 2 Factor Authentication enabled using Nexmo Verify and SendGrid Email as the different methods of verification.  
 
-**TODO: Image to prove it's working.**
+![alt text](https://giphy.com/gifs/d3g1n80UrhF12Rzi/fullscreen)
 
 2FA adds a layer of security to correctly identify users and further protect sensitive user information. Using Nexmo's C# Client Library and SendGrid's C# Client, you can add both email and phone verification for your 2FA solution with ease. Feel free to send me any thoughts/questions on Twitter @sidsharma_27 or email me at sidharth.sharma@nexmo.com!
-
