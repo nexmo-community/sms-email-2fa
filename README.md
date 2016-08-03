@@ -2,19 +2,19 @@
 
 2FA is a must nowadays to increase the security within your application. It is seen in all kinds of apps: from the signup process to user action verification. The most common types of 2FA are email verification and phone verification. In this tutorial we'll show how to set up 2FA in your .NET application using ASP .NET Identity, the [SendGrid C# Client](#) for email auth and the [Nexmo C# Client Library](https://github.com/nexmo/nexmo-dotnet) for SMS and Call-based auth.
 
-### Setup ASP .NET MVC application
+### [![alt text](https://cloud.githubusercontent.com/assets/328367/17298941/0cd29600-5804-11e6-950c-4542416776bf.png)](https://github.com/sidsharma27/dot-net-2FA-demo/commit/ee500bbadfd803b9d82986a492db367f5b262ced) Setup ASP .NET MVC application
 
 Open Visual Studio and create a new ASP .NET MVC application. For this demo, we'll delete the Contact & About sections from the default generated website. 
 
-### Install the Nexmo Client to your app via NuGet Package Manager
+### [![alt text](https://cloud.githubusercontent.com/assets/328367/17298941/0cd29600-5804-11e6-950c-4542416776bf.png)](https://github.com/nexmo-community/nexmo-verify-2fa-dotnet-example/commit/ee500bbadfd803b9d82986a492db367f5b262ced) Install the Nexmo Client to your app via NuGet Package Manager 
 
-Add the Nexmo Client to your application via the NuGet Package Console. [Commit](https://github.com/sidsharma27/dot-net-2FA-demo/commit/ee500bbadfd803b9d82986a492db367f5b262ced)
+Add the Nexmo Client to your application via the NuGet Package Console. 
 
 ```
 PM> Install-Package Nexmo.Csharp.Client
 ```
 
-### Install the SendGrid client via NuGet Package Manager 
+### [![alt text](https://cloud.githubusercontent.com/assets/328367/17298941/0cd29600-5804-11e6-950c-4542416776bf.png)](https://github.com/nexmo-community/nexmo-verify-2fa-dotnet-example/commit/ee500bbadfd803b9d82986a492db367f5b262ced) Install the SendGrid client via NuGet Package Manager 
 
 When doing this be sure to use the 6.3.3 version rather than the current 7.0.2 as there has been some difficulty with the namespaces for .NET 4.5.2
 
@@ -24,7 +24,7 @@ When doing this be sure to use the 6.3.3 version rather than the current 7.0.2 a
 PM> Install-Package SendGrid via NuGet Package Manager
 ```
 
-### Add Nexmo and SendGrid credentials
+### [![alt text](https://cloud.githubusercontent.com/assets/328367/17298941/0cd29600-5804-11e6-950c-4542416776bf.png)](https://github.com/nexmo-community/nexmo-verify-2fa-dotnet-example/commit/ee500bbadfd803b9d82986a492db367f5b262ced) Add Nexmo and SendGrid credentials
 
 For the purpose of the demo we'll put the Nexmo and SendGrid credentials in the '<appSettings>' section of the'Web.config' file. If we were developing this application for distribution we may chose to enter these credentials in our Azure portal.
 
@@ -38,7 +38,7 @@ For the purpose of the demo we'll put the Nexmo and SendGrid credentials in the 
 <add key="mailPassword" value="SENDGRID_PASSWORD"/>
 ```
 
-### Plug in Nexmo in the SMS Service, SendGrid in the Email Service
+### [![alt text](https://cloud.githubusercontent.com/assets/328367/17298941/0cd29600-5804-11e6-950c-4542416776bf.png)](https://github.com/nexmo-community/nexmo-verify-2fa-dotnet-example/commit/6d6242e587a0d5312fa90e3c13f749fc487945b2) Plug in Nexmo in the SMS Service, SendGrid in the Email Service
 
 Inside the `IdentityConfig.cs` file, add the SendGrid configuration in the `SMSService` method. Then, plug in the Nexmo Client inside the `SMSService` method of the `IdentityConfig.cs` file. Add the using directives for the Nexmo and SendGrid namespaces.
 
@@ -100,7 +100,7 @@ public class EmailService : IIdentityMessageService
 } 
 ```
 
-### Add 'SendEmailConfirmationTokenAsync()' method to 'AccountController'
+### [![alt text](https://cloud.githubusercontent.com/assets/328367/17298941/0cd29600-5804-11e6-950c-4542416776bf.png)](https://github.com/nexmo-community/nexmo-verify-2fa-dotnet-example/commit/c380379c50b3b7c107c07bde48e09913695c2324) Add 'SendEmailConfirmationTokenAsync()' method to 'AccountController'
 
 Add the following method to your `AccountController` which will be called on user registration to send a confirmation email to the provided email address.
 
@@ -116,7 +116,7 @@ private async Task<string> SendEmailConfirmationTokenAsync(string userID, string
 }
 ```
 
-### Update 'Register' action method
+### [![alt text](https://cloud.githubusercontent.com/assets/328367/17298941/0cd29600-5804-11e6-950c-4542416776bf.png)](https://github.com/nexmo-community/nexmo-verify-2fa-dotnet-example/commit/f7324744efe7c03f642325fe016600e73cc4a3c8) Update 'Register' action method
 
 Inside the `Register` method of the `AccountController`, add a couple properties to newly created variable of the ApplicationUser type: `TwoFactorEnabled` (`true`), `PhoneNumberConfirmed` (`false`). Once the user is successfully created, store the user ID in a session state and redirect the user to the `AddPhoneNumber` action method in the `ManageController`.
 
@@ -149,7 +149,7 @@ public async Task<ActionResult> Register(RegisterViewModel model)
 }
 ```
 
-### Check DB if phone number is taken and add SMS logic to the AddPhoneNumber action method
+### [![alt text](https://cloud.githubusercontent.com/assets/328367/17298941/0cd29600-5804-11e6-950c-4542416776bf.png)](https://github.com/nexmo-community/nexmo-verify-2fa-dotnet-example/commit/7830bd4bf6da255448f2566b1186fbd0a9122cb7) Check DB if phone number is taken and add SMS logic to the AddPhoneNumber action method
 
 Add the `[AllowAnonymous]` attribute to both the GET & POST `AddPhoneNumber` action methods. This allows the user in the process of registering to access the phone number confirmation workflow. Make a query and check the DB if the phone number entered by the user is previously associated with an account. If not, redirect the user to the `VerifyPhoneNumber` action method.
 
@@ -187,7 +187,7 @@ public async Task<ActionResult> AddPhoneNumber(AddPhoneNumberViewModel model)
 }
 ```
 
-### Update VerifyPhoneNumber Action method
+### [![alt text](https://cloud.githubusercontent.com/assets/328367/17298941/0cd29600-5804-11e6-950c-4542416776bf.png)](https://github.com/nexmo-community/nexmo-verify-2fa-dotnet-example/commit/9c212c41fe55bcd9e38f14348af55ddb774d1419) Update VerifyPhoneNumber Action method
 
 Add the `[AllowAnonymous]` attribute to the action method and delete everything in the method but the return statement that directs the verification flow,
 
@@ -226,7 +226,7 @@ public async Task<ActionResult> VerifyPhoneNumber(VerifyPhoneNumberViewModel mod
 		return View(model);
 }
 ```
-### Check if the user has a confirmed email on Login
+### [![alt text](https://cloud.githubusercontent.com/assets/328367/17298941/0cd29600-5804-11e6-950c-4542416776bf.png)](https://github.com/nexmo-community/nexmo-verify-2fa-dotnet-example/commit/078b28917fbfc9b48f09b01fbd20bd747270efc4) Check if the user has a confirmed email on Login
 
 In the `Login()` action method, check to see if the user has confirmed their email or not. If not, return an error message (ex: "You must have a confirmed email to login.") and redirect the user to the "Info" view. Also, call the `SendEmailConfirmationTokenAsync()` method with the following parameters: user ID (Ex: user.Id) and the email subject (Ex: "Confirm your account.") 
 
@@ -244,9 +244,18 @@ if (user != null)
 }
 ```
 
-### Add Info View
+### [![alt text](https://cloud.githubusercontent.com/assets/328367/17298941/0cd29600-5804-11e6-950c-4542416776bf.png)](https://github.com/nexmo-community/nexmo-verify-2fa-dotnet-example/commit/00dc4aa91f7ec73ee52db1f6ef23c136d83de6ae) Add Info View
 
 Inside the Account folder of the Views folder, create a new View named **TODO: named what?*** that the user is redirected to if their email has not been confirmed. The view should contain the following code:
+
+```xml
+<h2>@ViewBag.Title.</h2>
+<h3>@ViewBag.Message</h3>
+```
+
+### [![alt text](https://cloud.githubusercontent.com/assets/328367/17298941/0cd29600-5804-11e6-950c-4542416776bf.png)](https://github.com/nexmo-community/nexmo-verify-2fa-dotnet-example/commit/8501c9884faa97139dc4b30f2f41b4c448cd2641) Update Login View
+
+Inside the Account folder of the Views folder, edit the Login and VerifyCode views. In both files, delete the <div> containing the 'Remember Me' checkbox. This will restrict the user from bypassing 2FA verification.  Also, delete the corresponding variable in each of the view models ('SendCodeViewModel' and 'VerifyCodeViewModel').
 
 ```xml
 <h2>@ViewBag.Title.</h2>
